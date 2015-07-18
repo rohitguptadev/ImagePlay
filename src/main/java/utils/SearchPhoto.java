@@ -48,7 +48,7 @@ public class SearchPhoto {
 					searchParameters, 0, 0);
 			int i = 0;
 			for (Photo photo : list) {
-				if (i < 2)
+				if (i < 5)
 					result.add(new Pic(photo.getUrl(), getTagsImagga(photo
 							.getUrl())));
 
