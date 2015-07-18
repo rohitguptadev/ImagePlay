@@ -55,8 +55,8 @@ public class SearchPhoto {
 			for (Photo photo : list) {
 
 				if (i < numOfImages) {
-					result.add(new Pic(photo.getLarge1600Url(),
-							getTagsImagga(photo.getLarge1600Url(),confidence)));
+					result.add(new Pic(photo.getLarge1600Url(), getTagsImagga(
+							photo.getLarge1600Url(), confidence)));
 				}
 
 				i++;
@@ -117,12 +117,11 @@ public class SearchPhoto {
 
 			for (int i = 0; i < tags.length(); i++) {
 				double conf = 100;
-				try{
-				conf = Double.parseDouble(((JSONObject) tags.get(i))
-						.getString("confidence"));
-				}
-				catch (Exception e){
-					
+				try {
+					conf = (((JSONObject) tags.get(i))
+							.getDouble("confidence"));
+				} catch (Exception e) {
+
 				}
 				if (conf > confidence)
 					tagsPic.add(((JSONObject) tags.get(i)).getString("tag"));
