@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import model.Pic;
 
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.noggit.JSONParser;
+import org.springframework.boot.json.JsonJsonParser;
 
 import com.flickr4java.flickr.Flickr;
 import com.flickr4java.flickr.FlickrException;
@@ -39,7 +43,8 @@ public class SearchPhoto {
 				FlickerConstants.FLICKER_SECRET, new REST());
 	}
 
-	public ArrayList<Pic> searchPhotoByText(String text) {
+	public ArrayList<Pic> searchPhotoByText(String text, int numOfImages,
+			double confidence) {
 		SearchParameters searchParameters = new SearchParameters();
 		searchParameters.setText(text);
 		ArrayList<Pic> result = new ArrayList<>();
@@ -48,9 +53,11 @@ public class SearchPhoto {
 					searchParameters, 0, 0);
 			int i = 0;
 			for (Photo photo : list) {
-				if (i < 5)
-					result.add(new Pic(photo.getUrl(), getTagsImagga(photo
-							.getUrl())));
+
+				if (i < numOfImages) {
+					result.add(new Pic(photo.getLarge1600Url(),
+							getTagsImagga(photo.getLarge1600Url(),confidence)));
+				}
 
 				i++;
 			}
@@ -62,7 +69,7 @@ public class SearchPhoto {
 
 	}
 
-	private ArrayList<String> getTagsImagga(String url) {
+	private ArrayList<String> getTagsImagga(String url, double confidence) {
 		ArrayList<String> result = new ArrayList<>();
 		try {
 
@@ -70,9 +77,8 @@ public class SearchPhoto {
 					.get("http://api.imagga.com/v1/tagging?url=" + url)
 					.header("accept", "application/json")
 					.header("authorization",
-							"Basic "
-									+ Base64.encode("acc_ca9816ad84cb80c:bf99999bd82d8a836ff928dd7ba284dd"
-											.getBytes())).asString();
+							"Basic YWNjX2NhOTgxNmFkODRjYjgwYzpiZjk5OTk5YmQ4MmQ4YTgzNmZmOTI4ZGQ3YmEyODRkZA==")
+					.asString();
 			// result.add(response.getRawBody());
 			BufferedReader rd = new BufferedReader(new InputStreamReader(
 					response.getRawBody()));
@@ -87,7 +93,8 @@ public class SearchPhoto {
 				e.printStackTrace();
 			}
 
-			result.add(content.toString());
+			result = getTagsFromJson(content.toString(), confidence);
+			// result.add(content.toString());
 
 		} catch (UnirestException e) {
 			// TODO Auto-generated catch block
@@ -95,6 +102,38 @@ public class SearchPhoto {
 		}
 
 		return result;
+
+	}
+
+	private ArrayList<String> getTagsFromJson(String jsonString,
+			double confidence) {
+		ArrayList<String> tagsPic = new ArrayList<>();
+		try {
+
+			JSONObject jsonObject = new JSONObject(jsonString);
+			JSONArray result = (JSONArray) jsonObject.get("results");
+			JSONObject mainObj = (JSONObject) result.get(0);
+			JSONArray tags = (JSONArray) mainObj.get("tags");
+
+			for (int i = 0; i < tags.length(); i++) {
+				double conf = 100;
+				try{
+				conf = Double.parseDouble(((JSONObject) tags.get(i))
+						.getString("confidence"));
+				}
+				catch (Exception e){
+					
+				}
+				if (conf > confidence)
+					tagsPic.add(((JSONObject) tags.get(i)).getString("tag"));
+
+			}
+
+		} catch (Exception e) {
+
+		}
+
+		return tagsPic;
 
 	}
 
