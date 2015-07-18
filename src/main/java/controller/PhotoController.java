@@ -20,9 +20,9 @@ public class PhotoController {
 			.getLogger(PhotoController.class);
 
 	@RequestMapping(method = RequestMethod.GET)
-	public CustomResponse<List<Pic>> getAll(@RequestParam(value="search", defaultValue="house") String searchText ,@RequestParam(value="numOfImages", defaultValue="2") String maxNumOfImages,@RequestParam(value="minConfidence", defaultValue="50") String minConfidence ){
+	public CustomResponse<List<Pic>> getAll(@RequestParam(value="search", defaultValue="house") String searchText ,@RequestParam(value="numOfImages", defaultValue="2") String maxNumOfImages,@RequestParam(value="minConfidence", defaultValue="10.0") String minConfidence ){
 		logger.info("searchText "+searchText+" numberOfMaximumImages "+ maxNumOfImages);
-		double confidence = 50.0;
+		double confidence = 10.0;
 		int maxNumImages=10;
 		
 		try{
