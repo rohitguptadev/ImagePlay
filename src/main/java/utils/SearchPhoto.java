@@ -24,7 +24,7 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
-import constants.FlickerConstants;
+import constants.Constants;
 
 public class SearchPhoto {
 	private static final Logger logger = Logger.getLogger(SearchPhoto.class);
@@ -39,8 +39,8 @@ public class SearchPhoto {
 
 	public SearchPhoto() {
 
-		flickr = new Flickr(FlickerConstants.FLICKER_KEY,
-				FlickerConstants.FLICKER_SECRET, new REST());
+		flickr = new Flickr(Constants.FLICKER_KEY,
+				Constants.FLICKER_SECRET, new REST());
 	}
 
 	public ArrayList<Pic> searchPhotoByText(String text, int numOfImages,
@@ -77,7 +77,7 @@ public class SearchPhoto {
 					.get("http://api.imagga.com/v1/tagging?url=" + url)
 					.header("accept", "application/json")
 					.header("authorization",
-							"Basic YWNjX2NhOTgxNmFkODRjYjgwYzpiZjk5OTk5YmQ4MmQ4YTgzNmZmOTI4ZGQ3YmEyODRkZA==")
+							"Basic "+Constants.IMAGGA_KEY_SECRET_BASE64)
 					.asString();
 			// result.add(response.getRawBody());
 			BufferedReader rd = new BufferedReader(new InputStreamReader(
